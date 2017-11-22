@@ -1,0 +1,189 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Math.jack
+
+/**
+ * A basic math library.
+ */
+class Math {
+
+    static Array PowersOfTwoArray;
+    static int nBit;
+
+    /** Initializes the library. */
+    function void init() {
+        
+        var int idx ,sum;
+       
+        
+        let PowersOfTwoArray = Array.new(16);
+        let nBit = 16;
+        let idx = 0;
+        let sum = 1; // represent 2^0
+        while (idx < nBit){
+            let PowersOfTwoArray[idx] = sum;
+            let sum = sum + sum;
+            let idx = idx + 1;
+            }
+    return;
+    }
+
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+        if (x < 0){
+            let x = -x;
+            }
+        return x;
+    }
+
+    /** Returns the product of x and y. */
+    function int multiply(int x, int y) {
+        var int sum; //var
+        var int shiftedX;
+        var int index;
+        var int flag;
+        let sum = 0;
+        let shiftedX = x;
+        let index = 0;
+
+
+        if (((x > 0) & (y < 0)) | ((x < 0) & (y > 0))) {
+            let flag = 0; //negativ
+        }
+        while (index < nBit){ // -1
+            if (Math.j_bit_of_y(index ,y)) {
+                let sum = sum + shiftedX;
+            }
+            let shiftedX = Math.shift(shiftedX);
+        }
+        if (flag = 0 ) {
+            let sum = -sum;
+        }
+        return sum;
+    }
+
+    function int divide(int x, int y) {
+        var int q, answer, flag , mult;
+
+        if ((y > x) |(x = 0)) {
+            return 0;
+        }
+
+        if (y = 0) {
+            //do Output.printString ("divide in zero is illegal");
+            return 0;
+        }
+
+        let flag = Math.negativeFlag(x, y);
+        let x = Math.abs(x);
+        let y = Math.abs(y);
+        let q = Math.divide(x, y + y);
+        let mult = q + q;//Math.multiply(q,2);
+
+        if ((x - Math.multiply(mult, y)) < y) {
+            let answer = q + q;
+        }
+        else {
+            let answer = q + q + 1;
+        }
+
+        if (flag = 0) {
+            let answer = -answer;
+        }
+        return answer;
+    }
+
+
+    function void negativeFlag (int x, int y) {
+        var int flag;
+        if (((x > 0) & (y < 0)) | ((x < 0) & (y > 0))) {
+            let flag = 0; //negativ
+        }
+        else
+        {
+            let flag = 1;
+        }
+        return;
+    }
+
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+
+        var int index;
+        var int y;
+        let y = 0;
+        let index = nBit / 2 -1;
+
+        while (~(index = 0)) {
+            if ((Math.power((y + Math.power(2, index)),2) < x) | (Math.power((y + Math.power(2, index)),2) = x)) {
+                let y = y + Math.power(2, index);
+            let index = index - 1;
+            }
+        }
+        return y;
+    }
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+       if (a < b) {
+        return b;
+        }
+    if (a = b) {
+        return a;
+        }
+    else {
+        return a;
+        }
+    }
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+    if (a < b) {
+        return a;
+        }
+    if (a = b) {
+        return a;
+        }
+    else {
+        return b;
+        }
+    }
+
+    function int shift(int x) {
+        let x = x + x; 
+        return x;
+        }
+    
+    function boolean j_bit_of_y(int index, int y) {
+
+        var int temp;
+        let temp = y & PowersOfTwoArray[index];
+        return (~(temp = 0));
+        //if (~(temp = 0)) {
+        //    return 0;
+        //}
+        //else{
+        //    return 1;
+        //}
+    }
+
+    function int power (int x, int y) {
+        var int index;
+        let index = 0;
+
+        //if ((y < 0) | (x < 0)) {
+        //    do Output.printString ("Illegal in this fuction");
+        //    return x; 
+        //}
+
+
+        while (index < y-1) {
+            let x = x + x;
+            let index = index + 1;
+            }
+        return x;
+        }
+
+}   
+

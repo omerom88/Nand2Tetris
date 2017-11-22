@@ -1,0 +1,32 @@
+omerom88
+===============================================================================
+Omer Rom, ID 301544383, omer.rom@mail.huji.ac.il
+===============================================================================
+
+                           Project 1 - Elementary Logic Gates
+                           ----------------------------------
+  
+
+Submitted Files
+---------------
+README - This file.
+And.hdl - And gate chip.
+And16.hdl - And 16-bit chip.
+DMux.hdl - DMux gate chip.
+DMux4Way.hdl - DMux 4-way chip.
+DMux8Way.hdl - DMux 8-way chip.
+Mux.hdl - Mux gate chip.
+Mux4way16.hdl - Mux 4-way 16-bit chip.
+Mux8way16.hdl - Mux 8-way 16-bit chip.
+Mux16.hdl - Mux 16-bit chip.
+Not.hdl - Not gate chip.
+Not16.hdl - Not 16-bit chip.
+Or.hdl - Or gate chip. 
+Or8Way.hdl - Or 8-way chip.
+Or16.hdl - Or 16-bit chip.
+Xor.hdl - Xor gate chip.
+
+
+Remarks
+-------
+I decided to design the project by first building the basic chips - And + Not using Nand gate, and all the rest baised on this chips and the chips i builded along the way.

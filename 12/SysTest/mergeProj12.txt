@@ -1,0 +1,1028 @@
+######### Array #########
+
+/**
+ * Represents an array. Can be used to hold any type of object.
+ */
+class Array {
+	
+    /** Constructs a new Array of the given size. */
+    function Array new(int size) {
+		return Memory.alloc(size);
+    }
+
+    /** De-allocates the array and frees its space. */
+    method void dispose() {
+		do Memory.deAlloc(this);
+		return;
+    }
+}
+
+######### Keyboard #########
+
+/**
+ * A library for handling user input from the keyboard.
+ */
+class Keyboard {
+
+    /** Initializes the keyboard. */
+    function void init() {
+		return;
+    } 
+
+    /**
+     * Returns the ASCII code (as char) of the currently pressed key,
+     * or 0 if no key is currently pressed.
+     * Recognizes all ASCII characters, as well as the following extension
+     * of action keys:
+     * New line = 128 = String.newline()
+     * Backspace = 129 = String.backspace()
+     * Left Arrow = 130
+     * Up Arrow = 131
+     * Right Arrow = 132
+     * Down Arrow = 133
+     * Home = 134
+     * End = 135
+     * Page Up = 136
+     * Page Down = 137
+     * Insert = 138
+     * Delete = 139
+     * ESC = 140
+     * F1 - F12 = 141 - 152
+     */
+    function char keyPressed() {
+		return Memory.peek(24576);
+	}
+
+    /**								
+     * Reads the next character from the keyboard.
+     * waits until a key is pressed and then released, then echoes
+     * the key to the screen, and returns the value of the pressed key.
+     */
+    function char readChar() {
+		var char kbd;
+		do Output.printChar(0); // draw cursor
+		while (Keyboard.keyPressed() = 0)  {
+			// wait till user presses a key (spin lock for I/O).
+		}
+		let kbd = Keyboard.keyPressed();
+		while (~(Keyboard.keyPressed() = 0)) {
+			// wait for the user let go (spin lock for I/O).
+		}
+		do Output.backSpace(); // remove cursor
+		do Output.printChar(kbd);
+		return kbd;
+	}
+
+    /**								
+     * Prints the message on the screen, reads the next line
+     * (until a newline character) from the keyboard, and returns its value.
+     */
+    function String readLine(String message) {
+		var String line;
+		var char kbd;
+		do Output.printString(message);
+		let line = String.new(256); 
+		while (true) {
+			let kbd = Keyboard.readChar();
+			if (kbd = String.newLine()){
+				return line;
+			}
+			else {
+				if (kbd = String.backSpace()) {
+					do line.eraseLastChar();
+				}
+				else {
+					let line = line.appendChar(kbd);
+				}
+			}
+		}
+		return line;
+	}   
+
+    /**								
+     * Prints the message on the screen, reads the next line
+     * (until a newline character) from the keyboard, and returns its
+     * integer value (until the first non numeric character).
+     */
+    function int readInt(String message) {
+		var String line;
+		let line = Keyboard.readLine(message);
+		return line.intValue();
+	}
+}
+
+######### Math #########
+
+/**
+ * A basic math library.
+ */
+class Math {
+	static Array twoToThe;
+	static Array fullBits;
+	
+	
+	function boolean bit(int x, int j) {
+		return (x & twoToThe[j]);
+	}
+	
+    /** Initializes the library. */
+    function void init() {
+		//var int i;
+		let twoToThe = Array.new(16);
+		let twoToThe[0] = 1;
+		let twoToThe[1] = 2;
+		let twoToThe[2] = 4;
+		let twoToThe[3] = 8;
+		let twoToThe[4] = 16;
+		let twoToThe[5] = 32;
+		let twoToThe[6] = 64;
+		let twoToThe[7] = 128;
+		let twoToThe[8] = 256;
+		let twoToThe[9] = 512;
+		let twoToThe[10] = 1024;
+		let twoToThe[11] = 2048;
+		let twoToThe[12] = 4096;
+		let twoToThe[13] = 8192;
+		let twoToThe[14] = 16384;
+		let twoToThe[15] = ~(32767);
+		
+		let fullBits = Array.new(17);
+		let fullBits[0] = 0;
+		let fullBits[1] = 1;
+		let fullBits[2] = 3;
+		let fullBits[3] = 7;
+		let fullBits[4] = 15;
+		let fullBits[5] = 31;
+		let fullBits[6] = 63;
+		let fullBits[7] = 127;
+		let fullBits[8] = 255;
+		let fullBits[9] = 511;
+		let fullBits[10] = 1023;
+		let fullBits[11] = 2047;
+		let fullBits[12] = 4095;
+		let fullBits[13] = 8191;
+		let fullBits[14] = 16383;
+		let fullBits[15] = 32767;
+		let fullBits[16] = -1;
+		/** old code
+		let i = 1;
+		while (i < 16) {
+			let twoToThe[i] = twoToThe[i-1] + twoToThe[i-1];
+			let i = i + 1;
+		}
+		*/
+		
+		return;
+	}
+
+	function int getTwoToThe(int j) {
+		return twoToThe[j];
+	}
+	
+	function int getFullBits(int j) {
+		return fullBits[j];
+	}
+	
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+		if (x < 0) {
+			return -x;
+		}
+		else {
+			return x;
+		}
+	}
+	
+	/** Returns the product of x and y. 
+		not need to treat negative numbers.
+	*/
+	function int multiply(int x, int y) {
+		var int sum;
+		var int shiftedX;
+		var int j;
+		let sum = 0;
+		let shiftedX = x;
+		let j = 0;
+		while (j < 16) {
+			if (Math.bit(y,j)) {
+				let sum = sum + shiftedX;
+			}
+			let shiftedX = shiftedX + shiftedX;
+			let j = j + 1;
+		}
+		return sum;
+	}
+
+    /** Returns the integer part of x/y. */
+    function int divide(int x, int y) {
+		var boolean is_neg_x, is_neg_y;
+		var int q, num, res;
+		if (y = 0) {
+			// Output.printString("exception: divide by zero");
+			// Sys.halt();
+			return 0;
+		}
+		let is_neg_x = x < 0;
+		let is_neg_y = y < 0;
+		let x = Math.abs(x);
+		let y = Math.abs(y);
+		
+		if (y > x) {
+			return 0;
+		}
+
+		let q = Math.divide(x, y+y);
+		if (x-(2*q*y) < y) { // TODO reduce the running time of the condition
+			let res = (q + q);
+		}
+		else {
+			let res = (q + q + 1);
+		}
+		if (is_neg_x = is_neg_y) {
+			return res;
+		}
+		else {
+			return -res;
+		}
+	}
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+		var int y, j, temp;
+		let j = 7;
+		let y = 0;
+		while (~(j < 0)) {
+			let temp = Math.multiply(y + twoToThe[j], y + twoToThe[j]);
+			if (~(temp > x) & (temp > 0)) {
+				let y = y + twoToThe[j];
+			}
+			let j = j - 1;
+		}
+		return y;
+	}
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+		if (a < b) {
+			return b;
+		}	
+		else {
+			return a;
+		}
+	}
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+		if (a < b) {
+			return a;
+		}	
+		else {
+			return b;
+		}
+    }
+	
+	/** shifts the given register to the right by the given number of bits*/
+	function int shiftRight( int num, int shiftBy){
+		var int to, from, toReturn;
+		let toReturn = 0;
+		let to = 0;
+		let from = shiftBy;
+		while (from < 16){// for every bit in num
+			if ((num & twoToThe[from]) > 0){ // if the bit 'on'
+				let toReturn = toReturn + twoToThe[to]; // turn the bit in the result
+			}
+			let from = from + 1;
+			let to = to  + 1;
+		}
+		return toReturn;
+	}
+	
+	/** shifts the given register to the left by the given number of bits*/
+	function int shiftLeft( int num, int shiftBy){
+		var int to, from, toReturn;
+		let toReturn = 0;
+		let to = shiftBy;
+		let from = 0;
+		while (to < 16){// for every bit in num
+			if ((num & twoToThe[from]) > 0){ // if the bit 'on'
+				let toReturn = toReturn + twoToThe[to]; // turn the bit in the result
+			}
+			let from = from + 1;
+			let to = to + 1;
+		}
+		return toReturn;		
+	}
+}
+
+######### Memory #########
+
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * Memory operations library.
+ */ 
+class Memory {
+	static Array memory;
+	static Array freeList;
+	static int LENGTH;
+	static int NEXT;
+	
+    /** Initializes memory parameters. */
+    function void init() {
+		let memory = 0;
+		let LENGTH = 0;
+		let NEXT = 1;
+		let freeList = 2048; // upper bound 16383
+		// length of heap including the length and the size blocks.
+		let freeList[LENGTH] = (16383 - 2048) ;//+ 1; 
+		let freeList[NEXT] = null; // next block
+		return;
+    }
+	
+	/** for debag */
+	function Array getFreeList() {
+		return freeList;
+	}
+	
+    /** Returns the value of the main memory at the given address. */
+    function int peek(int address) {
+		return memory[address];
+    }
+
+    /** Sets the value of the main memory at this address
+     *  to the given value. */
+    function void poke(int address, int value) {
+		let memory[address] = value;
+		return;
+    }
+
+    /** finds and allocates from the heap a memory block of the 
+     *  specified size and returns a reference to its base address. */ 
+    function int alloc(int size) {
+		var Array bestFit;
+		var Array bestFitPrev;
+		var Array it;
+		var Array prev;
+		var int segLength;
+		
+		
+		// finds available segment
+		let size = size + 2;
+		let it = freeList;
+		let bestFit = null;
+		let bestFitPrev = null;
+		let prev = null;
+		while (~(it = null)) {
+			if (~(it[LENGTH] < size)) {
+				if (bestFit = null) { // for the first fit
+					let bestFit = it;
+					let bestFitPrev = prev;
+				}
+				else {
+					if (it[LENGTH] < bestFit[LENGTH]) { 
+						let bestFit = it;
+						let bestFitPrev = prev;
+					}
+				}	
+			}
+			let prev = it;
+			let it = it[NEXT];
+		}
+		
+		if (bestFit = null) {
+			do Sys.halt();
+		}
+		else {
+			if (bestFit[LENGTH] = size) { // when whole found segment needed.
+				if (bestFit = freeList) { // if the found segment is the head.
+					let freeList = bestFit[NEXT];
+				}
+				else {
+					let bestFitPrev[NEXT] = bestFit[NEXT];
+				}
+			}
+			else {
+				// needed part of the found segment, from the end of the available block.
+				let segLength = bestFit[LENGTH];
+				let bestFit[LENGTH] = bestFit[LENGTH] - size;
+				let bestFit = (bestFit + segLength ) - size; // computes the return address	
+			}
+							
+			let bestFit[LENGTH] = size;
+			let bestFit[NEXT] = null;
+		}
+		return (bestFit + 2);
+    } 
+
+    /** De-allocates the given object and frees its space. */
+    function void deAlloc(int object) {
+		var Array segment;
+		let segment = object - 2;
+		// push front
+		let segment[NEXT] = freeList;
+		let freeList = segment;
+		return;
+	}  
+}
+
+######### Output #########
+
+/**
+ * Handles writing characters to the screen.
+ * The text screen (256 columns and 512 roes) is divided into 23 text rows (0..22), 
+ * each containing 64 text columns (0..63).
+ * Each row is 11 pixels high (including 1 space pixel), and 8 pixels wide
+ * (including 2 space pixels).
+ */
+class Output {
+
+	static Array screen;
+	static int row;
+	static int col;
+
+    // Character map for printing on the left of a screen word
+    static Array charMaps; 
+
+    /** Initializes the screen and locates the cursor at the screen's top-left. */
+    function void init() {
+		let screen = 16384;
+		let row = 0;
+		let col = 0;
+		do Output.initMap();
+		return;
+	}
+
+    // Initalizes the character map array
+    function void initMap() {
+        var int i;
+    
+        let charMaps = Array.new(127);
+        
+        // black square (used for non printable characters)
+        do Output.create(0,63,63,63,63,63,63,63,63,63,0,0);
+
+        // Assigns the bitmap for each character in the charachter set.
+        do Output.create(65,12,30,51,51,63,51,51,51,51,0,0); // A 
+		
+	return;
+    }
+
+    // Creates a character map array of the given char index with the given values.
+    function void create(int index, int a, int b, int c, int d, int e,
+		         int f, int g, int h, int i, int j, int k) {
+	var Array map;
+
+	let map = Array.new(11);
+        let charMaps[index] = map;
+
+        let map[0] = a;
+        let map[1] = b;
+        let map[2] = c;
+        let map[3] = d;
+        let map[4] = e;
+        let map[5] = f;
+        let map[6] = g;
+        let map[7] = h;
+        let map[8] = i;
+        let map[9] = j;
+        let map[10] = k;
+
+        return;
+    }
+    
+    // Returns the character map (array of size 11) for the given character
+    // If an invalid character is given, returns the character map of a black square.
+    function Array getMap(char c) {
+        
+        if ((c < 32) | (c > 126)) {
+            let c = 0;
+        }
+        
+        return charMaps[c];
+    }
+
+    /** Moves the cursor to the j’th column of the i’th row,
+     *  and erases the character that was there. */
+    function void moveCursor(int i, int j) {
+		let row = i;
+		let col = j;
+		return;
+    } 
+
+    /** Prints c at the cursor location and advances the cursor one
+     *  column forward. */
+    function void printChar(char c) {
+		var int i, numToWrite, cursor, address;
+		var Array charMap;
+		var boolean isOod;
+		
+		if(c = 129) { // backSpace
+			do Output.backSpace();
+			return;
+		}
+		if (c = 128) { // new line
+			do Output.println();
+			return;
+		}
+		
+		let charMap = Output.getMap(c);
+		let cursor = (row*32*11) + (col/2);
+		let i = 0;
+		
+		// checks if the col is odd/even for the cell separation in the screen map.
+		let isOod = col & 1;
+		
+		while(i < 11) {
+			let address = cursor + (i*32); // the address of the relevant line.
+			let numToWrite = charMap[i];
+			if(isOod) {
+				let screen[address] = screen[address] & 255; // clean the relvant entry 255 = 00000000,11111111
+				let numToWrite = numToWrite * 256; // for example: numToWrite = 3 , 00000000,00000011 => 00000011,00000000 
+			}
+			else {
+				let screen[address] = screen[address] & (-256); // clean the relvant entry -256 = 11111111,00000000 by 2-complete's
+			}
+			let screen[address] = screen[address] | numToWrite;
+			let i = i + 1;
+		}
+		
+		if(col = 63) {
+			do Output.println();
+		}
+		else {
+			let col = col + 1;
+		}
+		return;
+	} 
+
+    /** Prints s starting at the cursor location, and advances the
+     *  cursor appropriately. */  
+    function void printString(String s) {
+		var int len, i;
+		let len = s.length();
+		let i = 0;
+		while(i < len) {
+			do Output.printChar(s.charAt(i));
+			let i = i + 1;
+		}
+		return;
+    } 
+
+    /** Prints i starting at the cursor location, and advances the
+     *  cursor appropriately. */ 
+    function void printInt(int i) {
+		var String str;
+		let str = String.new(6);
+		do str.setInt(i);
+        do Output.printString(str);
+        do str.dispose();
+        return;
+    } 
+
+	function void drawCursor() {
+		
+		return;
+	}
+		
+		
+    /** Advances the cursor to the beginning of the next line. */
+    function void println() {
+		if(row = 22) {
+			let row = 0;
+		}
+		else {
+			let row = row + 1;
+		}
+		let col = 0;
+		return;
+	} 
+
+    /** Moves the cursor one column back. */ 
+    function void backSpace() {
+	    if(col = 0) {
+            if(~(row = 0)) {
+				do Output.moveCursor(row - 1, 63);
+				do Output.printChar(32);
+				do Output.moveCursor(row - 1, 63);
+			}
+			// otherwise col = 0 and row = 0 , do nothing.
+		}
+		else {
+			do Output.moveCursor(row, col - 1);
+			do Output.printChar(32);
+			do Output.moveCursor(row, col - 1);
+		}
+        return;
+    } 
+}
+
+######### Screen #########
+
+/**
+ * Graphic screen library.
+ */
+class Screen {
+	static Array screen;
+	static boolean color;
+	
+    /** Initializes the Screen. */
+    function void init() {
+		let screen = 16384;
+		let color = true;
+		return;
+	}
+
+    /** Erases the whole screen. */
+    function void clearScreen() {
+		var int i;
+		let i = 0;
+		while (i < 8192) {
+			let screen[i] = false;
+			let i = i + 1;
+		}
+		return;
+	}
+
+    /** Sets the color to be used in further draw commands
+     *  where white = false, black = true. */
+    function void setColor(boolean b) {
+		let color = b;
+		return;
+	}
+	
+	/** draws the given mask in the given screen cell according to the color */
+	function void maskScreenCell( int address, int mask){
+		if (color) {
+			let screen[address] = screen[address] | mask;
+		}
+		else {
+			let screen[address] = screen[address] & (~mask);
+		}
+		return;
+	}
+
+    /** Draws the (x, y) pixel. */
+    function void drawPixel( int x, int y) {
+		var int bitToChange, address;		
+		let bitToChange = Math.getTwoToThe(x & 15); //the bit at x mod 16
+		let address = Math.shiftLeft(y,5) + Math.shiftRight(x,4); // address = y*32 + x/16
+		do Screen.maskScreenCell(address, bitToChange);
+		return;
+    }
+	
+	/** draw a vertical or horizontal line on the screen */
+	function void verticalOrHorizontal( int statCo, int from, int to, boolean isVertical) {
+		var int temp;
+		if ((to < from) & (isVertical)) {
+			let temp = from;
+			let from = to;
+			let to = temp;
+		}
+		if (isVertical) {
+			while (~(to < from)) {
+				do Screen.drawPixel(statCo, from);
+				let from = from + 1;
+			}
+		}
+		else {
+				do Screen.efficientHorizontal(statCo, from, to);
+			}
+		return;
+	}	
+	
+	/** draws a horizontal line efficiently on the screen using horizontal structure of the screen map */
+	function void efficientHorizontal( int y, int x1, int x2) {
+		var int startAddress, endAddress;
+		var int startReminder, endReminder;
+		//var int endLeft, endRigth;
+		//var int X1quotient, X1remainder, X2quotient, X2remainder;
+	
+		// find the start and end cells of the line
+		let startAddress = Math.shiftRight(x1, 4) + Math.shiftLeft(y, 5); // x1/16 + y*32 //1
+		let endAddress   = Math.shiftRight(x2, 4) + Math.shiftLeft(y, 5); // x2/16 + y*32 //3
+		
+		//calculate the mask at the start and end
+		let startReminder = x1 & 15; // x1 mod 16 // 4
+		let endReminder   = x2 & 15; // x2 mod 16 // 2
+		let startReminder = ~(Math.getFullBits(startReminder)); // all the pixels after x1's remainder bit
+		let endReminder   = Math.getFullBits(endReminder + 1);   // all the pixels before x2's remainder bit
+		
+		// in case the whole line is in the same cell
+		if (startAddress = endAddress){ 
+			let startReminder = startReminder & endReminder; // combine the two masks
+			do Screen.maskScreenCell(startAddress, startReminder);
+			return;
+		}
+		
+		// mask the start, fill the middle and mask the end
+		do Screen.maskScreenCell(startAddress, startReminder);
+		let startAddress = startAddress + 1;
+		while (startAddress < endAddress){
+			let screen[startAddress] = color;
+			let startAddress = startAddress + 1;
+		}
+		do Screen.maskScreenCell(endAddress, endReminder);
+		return;
+		/** old code
+		
+		let X1quotient = x1 / 16;
+		let X1remainder = x1 - (X1quotient*16);
+		let start = (y*32) + X1quotient;
+		 
+		let X2quotient = x2 / 16;
+		let X2remainder = x2 - (X2quotient*16);
+		if(~(X2remainder = 0)) {
+			let end = (y*32) + X2quotient;
+		}
+		else {
+			let end = (y*32) + X2quotient - 1;
+		}
+		
+		
+		if(start = end) { // the same block in the RAM
+			do Screen.verticalOrHorizontal(y, x1, x2, false);
+			return;
+		}
+		
+		if(~(X1remainder = 0)) { // draw the left side of the line
+			do Screen.verticalOrHorizontal(y, x1, x1 + 16 - X1remainder, false);
+			let start = start + 1;
+		}
+		if(~(X2remainder = 0)) { // draw the right side of the line
+			do Screen.verticalOrHorizontal(y, x2 - X2remainder, x2, false);
+			let end = end - 1;
+		}
+		while(~(end < start)) { // draw directly blocks in the RAM
+			let screen[start] = color;
+			let start = start + 1;
+		}
+		return;
+		*/
+	}
+	
+    /** Draws a line from (x1, y1) to (x2, y2). */
+    function void drawLine( int x1, int y1, int x2, int y2) {
+		var int dx, dy, adyMinusbdx, absDy;
+		var int a, b, absB, upOrDown;
+		var int temp, UP, DOWN;
+		
+		let UP = 1;
+		let DOWN = -1;
+		
+		// In order to move just right, a always be positive
+		if (x2 < x1) {
+			let temp = x1;
+			let x1 = x2;
+			let x2 = temp;
+			let temp = y1;
+			let y1 = y2;
+			let y2 = temp;
+		}
+
+		if (x1 = x2) {
+			do Screen.verticalOrHorizontal(x1, y1 , y2, true); // vertical line
+			return;
+		}
+		if (y1 = y2) {
+			do Screen.efficientHorizontal(y1, x1, x2); // horizontal line
+			return;
+		}
+		
+		// To find the direct in y-axis.
+		if (y2 < y1) {
+			let upOrDown = DOWN;
+		}
+		else {
+			let upOrDown = UP;
+		}
+		
+		let dx = x2 - x1;
+		let dy = y2 - y1;
+		let absDy = Math.abs(dy);
+		let adyMinusbdx = 0;
+		let a = 0;
+        let b = 0;
+
+        while(~(dx < a ) & ~(absDy < absB)) {
+			do Screen.drawPixel(x1 + a, y1 + b);
+			if( adyMinusbdx < 0 ) {
+                let a = a + 1;
+                let adyMinusbdx = adyMinusbdx + absDy;
+            }
+            else {
+                let b = b + upOrDown;
+				let absB = Math.abs(b);
+                let adyMinusbdx = adyMinusbdx - dx;
+            }
+		}
+		return;
+	}
+	
+    /** Draws a filled rectangle where the top left corner
+     *  is (x1, y1) and the bottom right corner is (x2, y2). */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+		while (~(y2 < y1)) {
+			do Screen.drawLine(x1, y1, x2, y1);
+			let y1 = y1 + 1;
+		}
+		return;
+    } 
+
+    /** Draws a filled circle of radius r around (cx, cy). */
+    function void drawCircle(int cx, int cy, int r) {
+		var int dy, x1, x2, y, dySqrd, rSqrd, width;
+		if (181 < r) { // to avoid overflow
+			return;
+		}
+		let rSqrd = r*r;
+		let dy = r;
+		let dySqrd = dy * dy;
+		while (~(dy < -r)) {
+			let width = Math.sqrt(rSqrd - dySqrd);
+			let x1 = cx - width;
+			let x2 = cx + width; 
+			let y = cy + dy;
+			do Screen.drawLine(x1, y, x2, y);
+			let dySqrd = dySqrd - dy - dy + 1;
+			let dy = dy - 1;
+		}
+		return;
+	} 
+}
+
+######### String #########
+
+/**
+ * Represents a String object. Implements the String type.
+ */
+class String {
+	field Array str;
+	field int len;
+    /** Constructs a new empty String with a maximum length of maxLength. */
+    constructor String new(int maxLength) {
+		if (maxLength = 0) {
+			let maxLength = 1;
+		}
+		let str = Array.new(maxLength);
+		let len = 0;
+		return this;
+    }
+
+    /** De-allocates the string and frees its space. */
+    method void dispose() {
+		do str.dispose();
+		let len = 0;
+		return;
+    }
+
+    /** Returns the current length of this String. */
+    method int length() {
+		return len;
+    }
+
+    /** Returns the character at location j. */
+    method char charAt(int j) {
+		return str[j];
+    }
+
+    /** Sets the j'th character of this string to be c. */
+    method void setCharAt(int j, char c) {
+		let str[j] = c;
+		return;
+    }
+
+    /** Appends the character c to the end of this String.
+     *  Returns this string as the return value. */
+    method String appendChar(char c) {
+		let str[len] = c;
+		let len = len + 1;
+		return this;
+    }
+
+    /** Erases the last character from this String. */
+    method void eraseLastChar() {
+		let len = len - 1;
+		return;
+	}
+
+    /** Returns the integer value of this String until the first non
+     *  numeric character. */
+    method int intValue() {
+		var int c, i, d, v;
+		var boolean is_neg;
+		let is_neg = false;
+		let i = 0;
+		let c = str[i];
+		if (c = 45) {
+			let is_neg = true;
+			let i = i + 1;
+		}
+		while (i < len) {
+			let c = str[i];
+			if ((c < 48) | (57 < c )) {
+				return v;
+			}
+			let d = c - 48;
+			let v = (v*10) + d;
+			let i = i +1;
+		}
+		if (is_neg) {
+			return -v;
+		}
+		return v;
+	}
+
+	method void recPosInt2Str(int posNum) {
+		var int c, lastDig, quotient;
+		let quotient = posNum / 10;
+		let lastDig = posNum - (quotient*10);
+		let c = lastDig + 48;
+		if (posNum < 10) {
+			do appendChar(c);
+		}
+		else {
+			do recPosInt2Str(quotient);
+			do appendChar(c);
+		}
+		return;
+	}
+	
+    /** Sets this String to hold a representation of the given number. */
+    method void setInt(int number) {
+		let len = 0;
+		if (number < 0) {
+			let str[0] = 45; // '-'
+			let len = 1;
+		}
+		let number = Math.abs(number);
+		do recPosInt2Str(number);
+		return;
+	}
+
+    /** Returns the new line character. */
+    function char newLine() {
+		return 128;
+    }
+
+    /** Returns the backspace character. */
+    function char backSpace() {
+		return 129;
+    }
+
+    /** Returns the double quote (") character. */
+    function char doubleQuote() {
+		return 34;
+    }
+}
+
+######### Sys #########
+
+/**
+ * A library of basic system services.
+ */
+class Sys {
+
+    /** Performs all the initializations required by the OS. */
+    function void init() {
+		do Memory.init();
+		do Math.init();
+		do Screen.init();
+		do Output.init();
+		do Keyboard.init();
+		do Main.main();
+		do Sys.halt(); 
+		return;
+    }
+
+    /** Halts execution. */
+    function void halt() {
+		while (true) {
+			// spin lock;
+		}
+		return;
+	}
+
+    /** Waits approximately duration milliseconds and then returns. */
+    function void wait(int duration) {
+		var int i, j;
+		let i = 0;
+		while (i < duration) {
+			let j = 0;
+			while (j < 200) {
+				let j = j + 1;
+			}
+			let i = i + 1; 
+		}
+		return;	
+    }
+
+    /** Prints the given error code in the form "ERR<errorCode>", and halts. */
+    function void error(int errorCode) {
+		do Output.printInt(errorCode);
+		do Sys.halt();
+		return;
+    }
+}
+

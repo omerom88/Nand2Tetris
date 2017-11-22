@@ -1,0 +1,34 @@
+davidberiro, omerom88
+===============================================================================
+David Benchimol, ID 332510908, david.benchimol@mail.huji.ac.il
+Omer Rom, ID 301544383, 
+===============================================================================
+
+                        Project 4 - Machine Language Programming
+                        ---------------------------------------
+  
+
+Submitted Files
+---------------
+README - This file.
+
+Fill.asm - Assembly language program which listens for user input on the
+		   keyboard, if any key is pressed the screen turns black otherwise
+           the screen stays white	
+
+Sort.asm - Assembly language program which recieves as input the location
+	       of an array and the location of the array length, and sorts it
+           in descending order
+
+Mult.asm - Assembly language program which receives the location of 2 16 bit
+		   numbers and calculates their product
+
+Divide.asm - Assembly program which receives as input 2 16 bit numbers and
+		     calculates the first divided by the second in logarithmic 
+             runtime (while throwing away the remainder)
+
+
+
+Remarks
+-------
+

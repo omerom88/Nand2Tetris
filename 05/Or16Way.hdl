@@ -1,0 +1,17 @@
+/*
+ * returns 0 iff all the input is zero
+ */
+CHIP Or16Way {
+
+    IN in[16];
+
+    OUT out;
+
+PARTS:
+	Or8Way(in = in[0..7], out=low);
+
+	Or8Way(in = in[8..15], out=high);
+
+	Or(a=high, b=low, out=out);
+
+}	

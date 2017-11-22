@@ -1,0 +1,455 @@
+function Screen.init 0
+push constant 16384
+pop static 0
+push constant 0
+not
+pop static 1
+push constant 0
+return
+function Screen.clearScreen 1
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push constant 8192
+lt
+not
+if-goto WHILE_END0
+push local 0
+push static 0
+add
+push constant 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Screen.setColor 0
+push argument 0
+pop static 1
+push constant 0
+return
+function Screen.maskScreenCell 0
+push static 1
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 0
+push static 0
+add
+push argument 0
+push static 0
+add
+pop pointer 1
+push that 0
+push argument 1
+or
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+goto IF_END0
+label IF_FALSE0
+push argument 0
+push static 0
+add
+push argument 0
+push static 0
+add
+pop pointer 1
+push that 0
+push argument 1
+not
+and
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+label IF_END0
+push constant 0
+return
+function Screen.drawPixel 2
+push argument 0
+push constant 15
+and
+call Math.getTwoToThe 1
+pop local 0
+push argument 1
+push constant 5
+call Math.shiftLeft 2
+push argument 0
+push constant 4
+call Math.shiftRight 2
+add
+pop local 1
+push local 1
+push local 0
+call Screen.maskScreenCell 2
+pop temp 0
+push constant 0
+return
+function Screen.verticalOrHorizontal 1
+push argument 2
+push argument 1
+lt
+push argument 3
+and
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 1
+pop local 0
+push argument 2
+pop argument 1
+push local 0
+pop argument 2
+label IF_FALSE0
+push argument 3
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+label WHILE_EXP0
+push argument 2
+push argument 1
+lt
+not
+not
+if-goto WHILE_END0
+push argument 0
+push argument 1
+call Screen.drawPixel 2
+pop temp 0
+push argument 1
+push constant 1
+add
+pop argument 1
+goto WHILE_EXP0
+label WHILE_END0
+goto IF_END1
+label IF_FALSE1
+push argument 0
+push argument 1
+push argument 2
+call Screen.efficientHorizontal 3
+pop temp 0
+label IF_END1
+push constant 0
+return
+function Screen.efficientHorizontal 4
+push argument 1
+push constant 4
+call Math.shiftRight 2
+push argument 0
+push constant 5
+call Math.shiftLeft 2
+add
+pop local 0
+push argument 2
+push constant 4
+call Math.shiftRight 2
+push argument 0
+push constant 5
+call Math.shiftLeft 2
+add
+pop local 1
+push argument 1
+push constant 15
+and
+pop local 2
+push argument 2
+push constant 15
+and
+pop local 3
+push local 2
+call Math.getFullBits 1
+not
+pop local 2
+push local 3
+push constant 1
+add
+call Math.getFullBits 1
+pop local 3
+push local 0
+push local 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 2
+push local 3
+and
+pop local 2
+push local 0
+push local 2
+call Screen.maskScreenCell 2
+pop temp 0
+push constant 0
+return
+label IF_FALSE0
+push local 0
+push local 2
+call Screen.maskScreenCell 2
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
+label WHILE_EXP0
+push local 0
+push local 1
+lt
+not
+if-goto WHILE_END0
+push local 0
+push static 0
+add
+push static 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push local 1
+push local 3
+call Screen.maskScreenCell 2
+pop temp 0
+push constant 0
+return
+function Screen.drawLine 11
+push constant 1
+pop local 9
+push constant 1
+neg
+pop local 10
+push argument 2
+push argument 0
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 0
+pop local 8
+push argument 2
+pop argument 0
+push local 8
+pop argument 2
+push argument 1
+pop local 8
+push argument 3
+pop argument 1
+push local 8
+pop argument 3
+label IF_FALSE0
+push argument 0
+push argument 2
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push argument 0
+push argument 1
+push argument 3
+push constant 0
+not
+call Screen.verticalOrHorizontal 4
+pop temp 0
+push constant 0
+return
+label IF_FALSE1
+push argument 1
+push argument 3
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push argument 1
+push argument 0
+push argument 2
+call Screen.efficientHorizontal 3
+pop temp 0
+push constant 0
+return
+label IF_FALSE2
+push argument 3
+push argument 1
+lt
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 10
+pop local 7
+goto IF_END3
+label IF_FALSE3
+push local 9
+pop local 7
+label IF_END3
+push argument 2
+push argument 0
+sub
+pop local 0
+push argument 3
+push argument 1
+sub
+pop local 1
+push local 1
+call Math.abs 1
+pop local 3
+push constant 0
+pop local 2
+push constant 0
+pop local 4
+push constant 0
+pop local 5
+label WHILE_EXP0
+push local 0
+push local 4
+lt
+not
+push local 3
+push local 6
+lt
+not
+and
+not
+if-goto WHILE_END0
+push argument 0
+push local 4
+add
+push argument 1
+push local 5
+add
+call Screen.drawPixel 2
+pop temp 0
+push local 2
+push constant 0
+lt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 4
+push constant 1
+add
+pop local 4
+push local 2
+push local 3
+add
+pop local 2
+goto IF_END4
+label IF_FALSE4
+push local 5
+push local 7
+add
+pop local 5
+push local 5
+call Math.abs 1
+pop local 6
+push local 2
+push local 0
+sub
+pop local 2
+label IF_END4
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Screen.drawRectangle 0
+label WHILE_EXP0
+push argument 3
+push argument 1
+lt
+not
+not
+if-goto WHILE_END0
+push argument 0
+push argument 1
+push argument 2
+push argument 1
+call Screen.drawLine 4
+pop temp 0
+push argument 1
+push constant 1
+add
+pop argument 1
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Screen.drawCircle 7
+push constant 181
+push argument 2
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+return
+label IF_FALSE0
+push argument 2
+push argument 2
+call Math.multiply 2
+pop local 5
+push argument 2
+pop local 0
+push local 0
+push local 0
+call Math.multiply 2
+pop local 4
+label WHILE_EXP0
+push local 0
+push argument 2
+neg
+lt
+not
+not
+if-goto WHILE_END0
+push local 5
+push local 4
+sub
+call Math.sqrt 1
+pop local 6
+push argument 0
+push local 6
+sub
+pop local 1
+push argument 0
+push local 6
+add
+pop local 2
+push argument 1
+push local 0
+add
+pop local 3
+push local 1
+push local 3
+push local 2
+push local 3
+call Screen.drawLine 4
+pop temp 0
+push local 4
+push local 0
+sub
+push local 0
+sub
+push constant 1
+add
+pop local 4
+push local 0
+push constant 1
+sub
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return

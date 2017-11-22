@@ -1,0 +1,29 @@
+adir89, fried_oded
+===============================================================================
+Adir Shemesh, ID 20143178, shemesh.adir@gmail.com
+Oded Fried, ID 200944759, fried.oded@gmail.com
+===============================================================================
+
+                           Project 12 - Operating System
+                           -----------------------------
+  
+Submitted Files
+---------------
+README  	  - This file.
+
+---- assignment files ----
+
+Array.jack 	   	- holds a constructor for arrays
+Keyboard.jack	- a library for handling user input from the keyboard
+Memory.jack		- implements the alloc and dealloc methods. manages free memory with a linked list
+				 allocates new segments with a best fit algorithm
+Output.jack		- handles writing characters and numbers to the screen
+Screen.jack		- a graphic library. holds functions for drawing shapes on the screen
+String.jack		- represents a string object
+Sys.jack		- a library of basic system services. holds the functions halt and wait
+
+   
+Remarks
+-------
+in the memory class we decided to use the best fit algorithm.
+as was explained in the forums, we didn't check for invalid input and didn't implemented defrag.

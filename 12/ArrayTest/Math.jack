@@ -1,0 +1,204 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Math.jack
+
+/**
+ * A basic math library.
+ */
+class Math {
+	static Array twoToThe;
+	static Array fullBits;
+	
+	
+	function boolean bit(int x, int j) {
+		return (x & twoToThe[j]);
+	}
+	
+    /** Initializes the library. */
+    function void init() {
+		//var int i;
+		let twoToThe = Array.new(16);
+		let twoToThe[0] = 1;
+		let twoToThe[1] = 2;
+		let twoToThe[2] = 4;
+		let twoToThe[3] = 8;
+		let twoToThe[4] = 16;
+		let twoToThe[5] = 32;
+		let twoToThe[6] = 64;
+		let twoToThe[7] = 128;
+		let twoToThe[8] = 256;
+		let twoToThe[9] = 512;
+		let twoToThe[10] = 1024;
+		let twoToThe[11] = 2048;
+		let twoToThe[12] = 4096;
+		let twoToThe[13] = 8192;
+		let twoToThe[14] = 16384;
+		let twoToThe[15] = ~(32767);
+		
+		let fullBits = Array.new(17);
+		let fullBits[0] = 0;
+		let fullBits[1] = 1;
+		let fullBits[2] = 3;
+		let fullBits[3] = 7;
+		let fullBits[4] = 15;
+		let fullBits[5] = 31;
+		let fullBits[6] = 63;
+		let fullBits[7] = 127;
+		let fullBits[8] = 255;
+		let fullBits[9] = 511;
+		let fullBits[10] = 1023;
+		let fullBits[11] = 2047;
+		let fullBits[12] = 4095;
+		let fullBits[13] = 8191;
+		let fullBits[14] = 16383;
+		let fullBits[15] = 32767;
+		let fullBits[16] = -1;
+		/** old code
+		let i = 1;
+		while (i < 16) {
+			let twoToThe[i] = twoToThe[i-1] + twoToThe[i-1];
+			let i = i + 1;
+		}
+		*/
+		
+		return;
+	}
+
+	function int getTwoToThe(int j) {
+		return twoToThe[j];
+	}
+	
+	function int getFullBits(int j) {
+		return fullBits[j];
+	}
+	
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+		if (x < 0) {
+			return -x;
+		}
+		else {
+			return x;
+		}
+	}
+	
+	/** Returns the product of x and y. 
+		not need to treat negative numbers.
+	*/
+	function int multiply(int x, int y) {
+		var int sum;
+		var int shiftedX;
+		var int j;
+		let sum = 0;
+		let shiftedX = x;
+		let j = 0;
+		while (j < 16) {
+			if (Math.bit(y,j)) {
+				let sum = sum + shiftedX;
+			}
+			let shiftedX = shiftedX + shiftedX;
+			let j = j + 1;
+		}
+		return sum;
+	}
+
+    /** Returns the integer part of x/y. */
+    function int divide(int x, int y) {
+		var boolean is_neg_x, is_neg_y;
+		var int q, num, res;
+		if (y = 0) {
+			// Output.printString("exception: divide by zero");
+			// Sys.halt();
+			return 0;
+		}
+		let is_neg_x = x < 0;
+		let is_neg_y = y < 0;
+		let x = Math.abs(x);
+		let y = Math.abs(y);
+		
+		if (y > x) {
+			return 0;
+		}
+
+		let q = Math.divide(x, y+y);
+		if (x-(2*q*y) < y) { // TODO reduce the running time of the condition
+			let res = (q + q);
+		}
+		else {
+			let res = (q + q + 1);
+		}
+		if (is_neg_x = is_neg_y) {
+			return res;
+		}
+		else {
+			return -res;
+		}
+	}
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+		var int y, j, temp;
+		let j = 7;
+		let y = 0;
+		while (~(j < 0)) {
+			let temp = Math.multiply(y + twoToThe[j], y + twoToThe[j]);
+			if (~(temp > x) & (temp > 0)) {
+				let y = y + twoToThe[j];
+			}
+			let j = j - 1;
+		}
+		return y;
+	}
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+		if (a < b) {
+			return b;
+		}	
+		else {
+			return a;
+		}
+	}
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+		if (a < b) {
+			return a;
+		}	
+		else {
+			return b;
+		}
+    }
+	
+	/** shifts the given register to the right by the given number of bits*/
+	function int shiftRight( int num, int shiftBy){
+		var int to, from, toReturn;
+		let toReturn = 0;
+		let to = 0;
+		let from = shiftBy;
+		while (from < 16){// for every bit in num
+			if ((num & twoToThe[from]) > 0){ // if the bit 'on'
+				let toReturn = toReturn + twoToThe[to]; // turn the bit in the result
+			}
+			let from = from + 1;
+			let to = to  + 1;
+		}
+		return toReturn;
+	}
+	
+	/** shifts the given register to the left by the given number of bits*/
+	function int shiftLeft( int num, int shiftBy){
+		var int to, from, toReturn;
+		let toReturn = 0;
+		let to = shiftBy;
+		let from = 0;
+		while (to < 16){// for every bit in num
+			if ((num & twoToThe[from]) > 0){ // if the bit 'on'
+				let toReturn = toReturn + twoToThe[to]; // turn the bit in the result
+			}
+			let from = from + 1;
+			let to = to + 1;
+		}
+		return toReturn;		
+	}
+}

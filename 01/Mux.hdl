@@ -1,0 +1,24 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux.hdl
+
+/** 
+ * Multiplexor - selects one of several analog or 
+ * digital input signals and forwards the selected input into a single line.
+ * Works as follows:
+ *
+ * out = a if sel == 0
+ *       b otherwise
+ */
+
+CHIP Mux {
+    IN a, b, sel;
+    OUT out;
+
+    PARTS:
+    Not (in=sel, out=notSEL);
+    And (a=a, b=notSEL, out=andA);
+    And (a=b, b=sel, out=andB);
+    Or (a=andA, b=andB, out=out);
+}

@@ -1,0 +1,111 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * Memory operations library.
+ */ 
+class Memory {
+	static Array memory;
+	static Array freeList;
+	static int LENGTH;
+	static int NEXT;
+	
+    /** Initializes memory parameters. */
+    function void init() {
+		let memory = 0;
+		let LENGTH = 0;
+		let NEXT = 1;
+		let freeList = 2048; // upper bound 16383
+		// length of heap including the length and the size blocks.
+		let freeList[LENGTH] = (16383 - 2048) ;//+ 1; 
+		let freeList[NEXT] = null; // next block
+		return;
+    }
+	
+	/** for debag */
+	function Array getFreeList() {
+		return freeList;
+	}
+	
+    /** Returns the value of the main memory at the given address. */
+    function int peek(int address) {
+		return memory[address];
+    }
+
+    /** Sets the value of the main memory at this address
+     *  to the given value. */
+    function void poke(int address, int value) {
+		let memory[address] = value;
+		return;
+    }
+
+    /** finds and allocates from the heap a memory block of the 
+     *  specified size and returns a reference to its base address. */ 
+    function int alloc(int size) {
+		var Array bestFit;
+		var Array bestFitPrev;
+		var Array it;
+		var Array prev;
+		var int segLength;
+		
+		
+		// finds available segment
+		let size = size + 2;
+		let it = freeList;
+		let bestFit = null;
+		let bestFitPrev = null;
+		let prev = null;
+		while (~(it = null)) {
+			if (~(it[LENGTH] < size)) {
+				if (bestFit = null) { // for the first fit
+					let bestFit = it;
+					let bestFitPrev = prev;
+				}
+				else {
+					if (it[LENGTH] < bestFit[LENGTH]) { 
+						let bestFit = it;
+						let bestFitPrev = prev;
+					}
+				}	
+			}
+			let prev = it;
+			let it = it[NEXT];
+		}
+		
+		if (bestFit = null) {
+			do Sys.halt();
+		}
+		else {
+			if (bestFit[LENGTH] = size) { // when whole found segment needed.
+				if (bestFit = freeList) { // if the found segment is the head.
+					let freeList = bestFit[NEXT];
+				}
+				else {
+					let bestFitPrev[NEXT] = bestFit[NEXT];
+				}
+			}
+			else {
+				// needed part of the found segment, from the end of the available block.
+				let segLength = bestFit[LENGTH];
+				let bestFit[LENGTH] = bestFit[LENGTH] - size;
+				let bestFit = (bestFit + segLength ) - size; // computes the return address	
+			}
+							
+			let bestFit[LENGTH] = size;
+			let bestFit[NEXT] = null;
+		}
+		return (bestFit + 2);
+    } 
+
+    /** De-allocates the given object and frees its space. */
+    function void deAlloc(int object) {
+		var Array segment;
+		let segment = object - 2;
+		// push front
+		let segment[NEXT] = freeList;
+		let freeList = segment;
+		return;
+	}  
+}

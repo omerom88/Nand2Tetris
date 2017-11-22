@@ -1,0 +1,24 @@
+a9709297, kfirc
+
+===============================================================================
+Avichai Babo, ID 201538832, avichai.babo@cs.huji.ac.il
+Kfir Corach, ID 300482320, kfir.corach@cs.huji.ac.il
+===============================================================================
+
+                       Project 12 -  OS
+                       ----------------------
+
+Submitted Files
+---------------
+
+README - This file.
+Math.jack - A basic math library.
+Array.jack - Represents an array
+Sys.jack -  A library of basic system services.
+String.jack - Represents a String object.
+Keyboard. jack - A library for handling user input from the keyboard.
+Output.jack -  Handles writing characters to the screen.
+Screen.jack - Graphic screen library.
+Memory.jack -  Memory operations library.
+
+

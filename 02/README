@@ -1,0 +1,26 @@
+omerom88
+===============================================================================
+Omer Rom, ID 301544383, omer.rom@mail.huji.ac.il
+===============================================================================
+
+                           Project 2 - Combinational Chips
+                           -------------------------------
+  
+
+Submitted Files
+---------------
+README - This file.
+Add16.hdl - Adds two 16-bit values.
+ALU.hdl - The ALU (Arithmetic Logic Unit).
+FullAdder.hdl - Computes the sum of three bits.
+HalfAdder.hdl - Computes the sum of two bits.
+Inc16.hdl -  16-bit incrementer.
+Mul.hdl - Multiply 2 given input (16-bit).
+ShiftLeft.hdl - 16-bit Multiplier (by 2).
+ShiftRight.hdl - 16-bit Divider (by 2).
+
+
+Remarks
+-------
+I decided to design my ShiftRight file by using one And and fifteen Or gate,
+becuse i couldn't think about something more sophisticated to do. Hope its efficient enough.

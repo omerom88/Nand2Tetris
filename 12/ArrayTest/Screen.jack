@@ -1,0 +1,236 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * Graphic screen library.
+ */
+class Screen {
+	static Array screen;
+	static boolean color;
+	
+    /** Initializes the Screen. */
+    function void init() {
+		let screen = 16384;
+		let color = true;
+		return;
+	}
+
+    /** Erases the whole screen. */
+    function void clearScreen() {
+		var int i;
+		let i = 0;
+		while (i < 8192) {
+			let screen[i] = false;
+			let i = i + 1;
+		}
+		return;
+	}
+
+    /** Sets the color to be used in further draw commands
+     *  where white = false, black = true. */
+    function void setColor(boolean b) {
+		let color = b;
+		return;
+	}
+	
+	/** draws the given mask in the given screen cell according to the color */
+	function void maskScreenCell( int address, int mask){
+		if (color) {
+			let screen[address] = screen[address] | mask;
+		}
+		else {
+			let screen[address] = screen[address] & (~mask);
+		}
+		return;
+	}
+
+    /** Draws the (x, y) pixel. */
+    function void drawPixel( int x, int y) {
+		var int bitToChange, address;		
+		let bitToChange = Math.getTwoToThe(x & 15); //the bit at x mod 16
+		let address = Math.shiftLeft(y,5) + Math.shiftRight(x,4); // address = y*32 + x/16
+		do Screen.maskScreenCell(address, bitToChange);
+		return;
+    }
+	
+	/** draw a vertical or horizontal line on the screen */
+	function void verticalOrHorizontal( int statCo, int from, int to, boolean isVertical) {
+		var int temp;
+		if ((to < from) & (isVertical)) {
+			let temp = from;
+			let from = to;
+			let to = temp;
+		}
+		if (isVertical) {
+			while (~(to < from)) {
+				do Screen.drawPixel(statCo, from);
+				let from = from + 1;
+			}
+		}
+		else {
+				do Screen.efficientHorizontal(statCo, from, to);
+			}
+		return;
+	}	
+	
+	/** draws a horizontal line efficiently on the screen using horizontal structure of the screen map */
+	function void efficientHorizontal( int y, int x1, int x2) {
+		var int startAddress, endAddress;
+		var int startReminder, endReminder;
+		//var int endLeft, endRigth;
+		//var int X1quotient, X1remainder, X2quotient, X2remainder;
+	
+		// find the start and end cells of the line
+		let startAddress = Math.shiftRight(x1, 4) + Math.shiftLeft(y, 5); // x1/16 + y*32 //1
+		let endAddress   = Math.shiftRight(x2, 4) + Math.shiftLeft(y, 5); // x2/16 + y*32 //3
+		
+		//calculate the mask at the start and end
+		let startReminder = x1 & 15; // x1 mod 16 // 4
+		let endReminder   = x2 & 15; // x2 mod 16 // 2
+		let startReminder = ~(Math.getFullBits(startReminder)); // all the pixels after x1's remainder bit
+		let endReminder   = Math.getFullBits(endReminder + 1);   // all the pixels before x2's remainder bit
+		
+		// in case the whole line is in the same cell
+		if (startAddress = endAddress){ 
+			let startReminder = startReminder & endReminder; // combine the two masks
+			do Screen.maskScreenCell(startAddress, startReminder);
+			return;
+		}
+		
+		// mask the start, fill the middle and mask the end
+		do Screen.maskScreenCell(startAddress, startReminder);
+		let startAddress = startAddress + 1;
+		while (startAddress < endAddress){
+			let screen[startAddress] = color;
+			let startAddress = startAddress + 1;
+		}
+		do Screen.maskScreenCell(endAddress, endReminder);
+		return;
+		/** old code
+		
+		let X1quotient = x1 / 16;
+		let X1remainder = x1 - (X1quotient*16);
+		let start = (y*32) + X1quotient;
+		 
+		let X2quotient = x2 / 16;
+		let X2remainder = x2 - (X2quotient*16);
+		if(~(X2remainder = 0)) {
+			let end = (y*32) + X2quotient;
+		}
+		else {
+			let end = (y*32) + X2quotient - 1;
+		}
+		
+		
+		if(start = end) { // the same block in the RAM
+			do Screen.verticalOrHorizontal(y, x1, x2, false);
+			return;
+		}
+		
+		if(~(X1remainder = 0)) { // draw the left side of the line
+			do Screen.verticalOrHorizontal(y, x1, x1 + 16 - X1remainder, false);
+			let start = start + 1;
+		}
+		if(~(X2remainder = 0)) { // draw the right side of the line
+			do Screen.verticalOrHorizontal(y, x2 - X2remainder, x2, false);
+			let end = end - 1;
+		}
+		while(~(end < start)) { // draw directly blocks in the RAM
+			let screen[start] = color;
+			let start = start + 1;
+		}
+		return;
+		*/
+	}
+	
+    /** Draws a line from (x1, y1) to (x2, y2). */
+    function void drawLine( int x1, int y1, int x2, int y2) {
+		var int dx, dy, adyMinusbdx, absDy;
+		var int a, b, absB, upOrDown;
+		var int temp, UP, DOWN;
+		
+		let UP = 1;
+		let DOWN = -1;
+		
+		// In order to move just right, a always be positive
+		if (x2 < x1) {
+			let temp = x1;
+			let x1 = x2;
+			let x2 = temp;
+			let temp = y1;
+			let y1 = y2;
+			let y2 = temp;
+		}
+
+		if (x1 = x2) {
+			do Screen.verticalOrHorizontal(x1, y1 , y2, true); // vertical line
+			return;
+		}
+		if (y1 = y2) {
+			do Screen.efficientHorizontal(y1, x1, x2); // horizontal line
+			return;
+		}
+		
+		// To find the direct in y-axis.
+		if (y2 < y1) {
+			let upOrDown = DOWN;
+		}
+		else {
+			let upOrDown = UP;
+		}
+		
+		let dx = x2 - x1;
+		let dy = y2 - y1;
+		let absDy = Math.abs(dy);
+		let adyMinusbdx = 0;
+		let a = 0;
+        let b = 0;
+
+        while(~(dx < a ) & ~(absDy < absB)) {
+			do Screen.drawPixel(x1 + a, y1 + b);
+			if( adyMinusbdx < 0 ) {
+                let a = a + 1;
+                let adyMinusbdx = adyMinusbdx + absDy;
+            }
+            else {
+                let b = b + upOrDown;
+				let absB = Math.abs(b);
+                let adyMinusbdx = adyMinusbdx - dx;
+            }
+		}
+		return;
+	}
+	
+    /** Draws a filled rectangle where the top left corner
+     *  is (x1, y1) and the bottom right corner is (x2, y2). */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+		while (~(y2 < y1)) {
+			do Screen.drawLine(x1, y1, x2, y1);
+			let y1 = y1 + 1;
+		}
+		return;
+    } 
+
+    /** Draws a filled circle of radius r around (cx, cy). */
+    function void drawCircle(int cx, int cy, int r) {
+		var int dy, x1, x2, y, dySqrd, rSqrd, width;
+		if (181 < r) { // to avoid overflow
+			return;
+		}
+		let rSqrd = r*r;
+		let dy = r;
+		let dySqrd = dy * dy;
+		while (~(dy < -r)) {
+			let width = Math.sqrt(rSqrd - dySqrd);
+			let x1 = cx - width;
+			let x2 = cx + width; 
+			let y = cy + dy;
+			do Screen.drawLine(x1, y, x2, y);
+			let dySqrd = dySqrd - dy - dy + 1;
+			let dy = dy - 1;
+		}
+		return;
+	} 
+}

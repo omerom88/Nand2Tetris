@@ -1,0 +1,23 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Xor.hdl
+
+/**
+ * Xor - a digital logic gate that implements an exclusive or.
+ * Works as follows:
+ *
+ * out = not (a == b)
+ */
+
+CHIP Xor {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    And (a=a, b=b, out=outAND);
+    Not (in=outAND, out=notOutAnd);
+    Or (a=a, b=b, out=outOR);
+    And (a=notOutAnd, b=outOR, out=out);
+    
+}

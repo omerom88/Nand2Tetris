@@ -1,0 +1,127 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/String.jack
+
+/**
+ * Represents a String object. Implements the String type.
+ */
+class String {
+	field Array str;
+	field int len;
+    /** Constructs a new empty String with a maximum length of maxLength. */
+    constructor String new(int maxLength) {
+		if (maxLength = 0) {
+			let maxLength = 1;
+		}
+		let str = Array.new(maxLength);
+		let len = 0;
+		return this;
+    }
+
+    /** De-allocates the string and frees its space. */
+    method void dispose() {
+		do str.dispose();
+		let len = 0;
+		return;
+    }
+
+    /** Returns the current length of this String. */
+    method int length() {
+		return len;
+    }
+
+    /** Returns the character at location j. */
+    method char charAt(int j) {
+		return str[j];
+    }
+
+    /** Sets the j'th character of this string to be c. */
+    method void setCharAt(int j, char c) {
+		let str[j] = c;
+		return;
+    }
+
+    /** Appends the character c to the end of this String.
+     *  Returns this string as the return value. */
+    method String appendChar(char c) {
+		let str[len] = c;
+		let len = len + 1;
+		return this;
+    }
+
+    /** Erases the last character from this String. */
+    method void eraseLastChar() {
+		let len = len - 1;
+		return;
+	}
+
+    /** Returns the integer value of this String until the first non
+     *  numeric character. */
+    method int intValue() {
+		var int c, i, d, v;
+		var boolean is_neg;
+		let is_neg = false;
+		let i = 0;
+		let c = str[i];
+		if (c = 45) {
+			let is_neg = true;
+			let i = i + 1;
+		}
+		while (i < len) {
+			let c = str[i];
+			if ((c < 48) | (57 < c )) {
+				return v;
+			}
+			let d = c - 48;
+			let v = (v*10) + d;
+			let i = i +1;
+		}
+		if (is_neg) {
+			return -v;
+		}
+		return v;
+	}
+
+	method void recPosInt2Str(int posNum) {
+		var int c, lastDig, quotient;
+		let quotient = posNum / 10;
+		let lastDig = posNum - (quotient*10);
+		let c = lastDig + 48;
+		if (posNum < 10) {
+			do appendChar(c);
+		}
+		else {
+			do recPosInt2Str(quotient);
+			do appendChar(c);
+		}
+		return;
+	}
+	
+    /** Sets this String to hold a representation of the given number. */
+    method void setInt(int number) {
+		let len = 0;
+		if (number < 0) {
+			let str[0] = 45; // '-'
+			let len = 1;
+		}
+		let number = Math.abs(number);
+		do recPosInt2Str(number);
+		return;
+	}
+
+    /** Returns the new line character. */
+    function char newLine() {
+		return 128;
+    }
+
+    /** Returns the backspace character. */
+    function char backSpace() {
+		return 129;
+    }
+
+    /** Returns the double quote (") character. */
+    function char doubleQuote() {
+		return 34;
+    }
+}

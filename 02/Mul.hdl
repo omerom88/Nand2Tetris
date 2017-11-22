@@ -1,0 +1,73 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/02/Mul.hdl
+
+/**
+ * Multiply 2 given input (16-bit).
+ * 
+ */
+
+
+CHIP Mul{
+    
+    IN a[16], b[16];
+    
+    OUT out[16];
+
+    
+
+    PARTS:
+//  multiply a by 2 fifteen times for each step
+    ShiftLeft(in=a,out=shiftLeft1);
+    ShiftLeft(in=shiftLeft1,out=shiftLeft2);
+    ShiftLeft(in=shiftLeft2,out=shiftLeft3);
+    ShiftLeft(in=shiftLeft3,out=shiftLeft4);
+    ShiftLeft(in=shiftLeft4,out=shiftLeft5);
+    ShiftLeft(in=shiftLeft5,out=shiftLeft6);
+    ShiftLeft(in=shiftLeft6,out=shiftLeft7);
+    ShiftLeft(in=shiftLeft7,out=shiftLeft8);
+    ShiftLeft(in=shiftLeft8,out=shiftLeft9);
+    ShiftLeft(in=shiftLeft9,out=shiftLeft10);
+    ShiftLeft(in=shiftLeft10,out=shiftLeft11);
+    ShiftLeft(in=shiftLeft11,out=shiftLeft12);
+    ShiftLeft(in=shiftLeft12,out=shiftLeft13);
+    ShiftLeft(in=shiftLeft13,out=shiftLeft14);
+    ShiftLeft(in=shiftLeft14,out=shiftLeft15);
+
+//  to calculate the result we need to ignore steps where b was even
+    Mux16(a=false,b=a,sel=b[0],out=out1step); 	
+    Mux16(a=false,b=shiftLeft1,sel=b[1],out=out2step); 
+    Mux16(a=false,b=shiftLeft2,sel=b[2],out=out3step);
+    Mux16(a=false,b=shiftLeft3,sel=b[3],out=out4step);
+    Mux16(a=false,b=shiftLeft4,sel=b[4],out=out5step);
+    Mux16(a=false,b=shiftLeft5,sel=b[5],out=out6step);
+    Mux16(a=false,b=shiftLeft6,sel=b[6],out=out7step);
+    Mux16(a=false,b=shiftLeft7,sel=b[7],out=out8step);
+    Mux16(a=false,b=shiftLeft8,sel=b[8],out=out9step);
+    Mux16(a=false,b=shiftLeft9,sel=b[9],out=out10step);
+    Mux16(a=false,b=shiftLeft10,sel=b[10],out=out11step);
+    Mux16(a=false,b=shiftLeft11,sel=b[11],out=out12step);
+    Mux16(a=false,b=shiftLeft12,sel=b[12],out=out13step);
+    Mux16(a=false,b=shiftLeft13,sel=b[13],out=out14step);
+    Mux16(a=false,b=shiftLeft14,sel=b[14],out=out15step);
+    Mux16(a=false,b=shiftLeft15,sel=b[15],out=out16step);
+
+// add all the steps together to get the result
+    Add16(a=out1step,b=out2step,out=result1);
+    Add16(a=result1,b=out3step,out=result2);
+    Add16(a=result2,b=out4step,out=result3);
+    Add16(a=result3,b=out5step,out=result4);
+    Add16(a=result4,b=out6step,out=result5);
+    Add16(a=result5,b=out7step,out=result6);
+    Add16(a=result6,b=out8step,out=result7);
+    Add16(a=result7,b=out9step,out=result8);
+    Add16(a=result8,b=out10step,out=result9);
+    Add16(a=result9,b=out11step,out=result10);
+    Add16(a=result10,b=out12step,out=result11);
+    Add16(a=result11,b=out13step,out=result12);
+    Add16(a=result12,b=out14step,out=result13);
+    Add16(a=result13,b=out15step,out=result14);
+
+    Add16(a=result14,b=out16step,out=out);
+}

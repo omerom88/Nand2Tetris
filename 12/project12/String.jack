@@ -1,0 +1,154 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/String.jack
+
+/**
+ * Represents a String object. Implements the String type.
+ */
+class String {
+    field Array strArr;
+    field int last_length;
+    field int curLen;
+    field int len_max;
+
+
+    /** Constructs a new empty String with a maximum length of maxLength. */
+    constructor String new(int maxLength) {
+        let curLen = maxLength;
+
+        if (curLen < 0){
+            let curLen =  1;
+        }
+        let last_length = 0;
+        let strArr = Array.new(curLen);
+        return this;
+
+    
+    }
+
+    /** De-allocates the string and frees its space. */
+    method void dispose() {
+        do memory.deAlloc(this);
+        return;
+    }
+
+    /** Returns the current length of this String. */
+    method int length() {
+        return last_length;
+    }
+
+    /** Returns the character at location j. */
+    method char charAt(int j) {
+        return strArr[j];
+    }
+
+    /** Sets the j'th character of this string to be c. */
+    method void setCharAt(int j, char c) {
+        if (~(j < 0) & (~(j > last_length - 1)) ) {
+            let strArr[j] = c;
+        }
+        return;
+    }
+
+    /** Appends the character c to the end of this String.
+     *  Returns this string as the return value. */
+    method String appendChar(char c) {
+        if (~(curLen > last_length) & (~(curLen > last_length))) {
+
+                let strArr[curLen] = c;
+
+                let curLen = curLen + 1;
+            }
+        
+        return this;  
+    }
+
+    /** Erases the last character from this String. */
+    method void eraseLastChar() {
+        let curLen = curLen - 1;
+        return;
+    }
+
+    /** Returns the integer value of this String until the first non
+     *  numeric character. */
+    method int intValue() {
+
+        var int flag ,idx , num_from_str ,dig;
+        let idx = 0;
+        let flag = 0;
+        let num_from_str = 0;
+
+        while (~(idx > curLen - 1) & (strArr[idx] > 47  & strArr[idx] < 58  )) { // for numbers in ascii code
+            let dig = strArr[idx] - 48;
+
+            if (strArr[idx] = 45) {
+               let flag = 1;    
+            }
+            else
+            {
+                
+                let num_from_str = (num_from_str * 10) + dig;
+            }
+            let idx = idx + 1;
+
+
+        }
+        return num_from_str;
+    }
+
+    /** Sets this String to hold a representation of the given number. */
+    method void setInt(int number) {
+
+        // Convert anon negativ to a string
+        var int num_to_char, mult;
+        let num_to_char = 0;
+        if (number < 0) {
+            let number = -number;
+            do appendChar(45);
+            }
+
+        while (number > 0) {
+            let mult = 1;
+            let num_to_char = number;
+            
+            while (num_to_char > 9) {
+            let num_to_char = num_to_char / 10;
+            let mult = mult * 10;
+            }
+            let number = number - (mult * num_to_char);
+            do appendChar(num_to_char + 48);
+        }
+        return;
+    }
+
+    /** Returns the new line character. */
+    function char newLine() {
+        return 128;
+    }
+
+    /** Returns the backspace character. */
+    function char backSpace() {
+        return 129;
+    }
+
+    /** Returns the double quote (") character. */
+    function char doubleQuote() {
+        return 34;
+    }
+
+    /** Calculate modulu 10 for setInt fucntion*/
+    function char modulu10(int number) {
+        while (~(number < 10)){
+            if (number > 1000){
+                let number = number - 1000;
+            }        
+            if ((number > 100) & (~(number > 1000))){
+                let number = number - 100;
+            }
+
+            let number = number - 10;
+        }
+        return number;
+    }
+}
